@@ -14,13 +14,14 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     env:
       RAILS_ENV: production
-      # Kamal 会从这些环境变量读取机密（对应 deploy.yml 中的引用）
       RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
-      KAMAL_REGISTRY_PASSWORD: ${{ secrets.KAMAL_REGISTRY_PASSWORD }}
-      # 可选：如果你的 SSH 用户不是 root，请在 deploy.yml 中设置 ssh.user，或在此处设置
-      # KAMAL_SSH_USER: ${{ secrets.KAMAL_SSH_USER }}
+      # 将 Kamal 的 registry 密码设为 GITHUB_TOKEN，供推送与服务器拉取镜像用
+      KAMAL_REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -51,6 +52,13 @@ jobs:
       - name: Kamal setup (optional)
         if: ${{ inputs.run_setup }}
         run: bundle exec kamal setup
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Kamal deploy
         run: bundle exec kamal deploy
