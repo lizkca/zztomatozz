@@ -7,7 +7,7 @@ image: ghcr.io/lizkca/zztomatozz
 # Deploy to these servers.
 servers:
   web:
-    - 192.168.0.1
+    - 157.245.60.18
   # job:
   #   hosts:
   #     - 192.168.0.1
