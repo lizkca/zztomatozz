@@ -39,25 +39,18 @@ jobs:
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_PORT: ${{ secrets.SSH_PORT }} # optional; defaults to 22
-          SSH_USER: ${{ secrets.SSH_USER }} # set this to your server user, e.g. "root"
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
         run: |
           set -euo pipefail
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
-
-          # Write key preserving newlines; strip CRLF if present
           printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           sed -i 's/\r$//' ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-
-          # Validate key loads; if passphrase-protected or invalid, fail fast
-          if ! ssh-keygen -y -f ~/.ssh/id_rsa >/dev/null 2>&1; then
-            echo "SSH_PRIVATE_KEY is invalid or passphrase-protected. Use an unencrypted key for CI."
-            exit 1
-          fi
-
-          # Refresh known_hosts entry
+          # 先校验私钥是否可解析（避免加密或损坏的密钥）
+          ssh-keygen -y -f ~/.ssh/id_rsa >/dev/null 2>&1 || { echo "SSH_PRIVATE_KEY invalid or passphrase-protected"; exit 1; }
+          # 刷新目标主机指纹
           if [ -n "${SSH_HOST:-}" ]; then
             ssh-keygen -R "$SSH_HOST" || true
             if [ -n "${SSH_PORT:-}" ]; then
@@ -66,8 +59,14 @@ jobs:
               ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts || true
             fi
           fi
-
-          # Preflight connectivity using correct user/port
+      - name: Preflight SSH connectivity
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          set -euo pipefail
           TARGET="${SSH_HOST}"
           [ -n "${SSH_USER:-}" ] && TARGET="${SSH_USER}@${TARGET}"
           PRE_PORT=()
