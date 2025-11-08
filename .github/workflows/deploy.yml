@@ -39,14 +39,27 @@ jobs:
         shell: bash
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SSH_HOST: ${{ secrets.SSH_HOST }} # 服务器的域名或公网 IP，用于 known_hosts
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+
           if [ -n "$SSH_HOST" ]; then
-            ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts || true
+            # Remove any stale known_hosts entry for the target
+            ssh-keygen -R "$SSH_HOST" || true
+
+            # Add current host key (supports custom SSH port)
+            if [ -n "$SSH_PORT" ]; then
+              ssh-keyscan -p "$SSH_PORT" -H "$SSH_HOST" >> ~/.ssh/known_hosts || true
+            else
+              ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts || true
+            fi
+
+            # Preflight connectivity with strict host key checking
+            ssh -o BatchMode=yes -o StrictHostKeyChecking=yes ${SSH_PORT:+-p "$SSH_PORT"} "$SSH_HOST" "echo ok" || exit 1
           fi
 
       - name: Kamal setup (optional)
