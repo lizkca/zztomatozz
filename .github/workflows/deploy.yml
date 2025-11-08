@@ -20,7 +20,6 @@ jobs:
     env:
       RAILS_ENV: production
       RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
-      # 将 Kamal 的 registry 密码设为 GITHUB_TOKEN，供推送与服务器拉取镜像用
       KAMAL_REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
@@ -40,27 +39,40 @@ jobs:
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_PORT: ${{ secrets.SSH_PORT }} # optional; defaults to 22
+          SSH_USER: ${{ secrets.SSH_USER }} # set this to your server user, e.g. "root"
         run: |
+          set -euo pipefail
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+
+          # Write key preserving newlines; strip CRLF if present
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          sed -i 's/\r$//' ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
-          if [ -n "$SSH_HOST" ]; then
-            # Remove any stale known_hosts entry for the target
-            ssh-keygen -R "$SSH_HOST" || true
+          # Validate key loads; if passphrase-protected or invalid, fail fast
+          if ! ssh-keygen -y -f ~/.ssh/id_rsa >/dev/null 2>&1; then
+            echo "SSH_PRIVATE_KEY is invalid or passphrase-protected. Use an unencrypted key for CI."
+            exit 1
+          fi
 
-            # Add current host key (supports custom SSH port)
-            if [ -n "$SSH_PORT" ]; then
+          # Refresh known_hosts entry
+          if [ -n "${SSH_HOST:-}" ]; then
+            ssh-keygen -R "$SSH_HOST" || true
+            if [ -n "${SSH_PORT:-}" ]; then
               ssh-keyscan -p "$SSH_PORT" -H "$SSH_HOST" >> ~/.ssh/known_hosts || true
             else
               ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts || true
             fi
-
-            # Preflight connectivity with strict host key checking
-            ssh -o BatchMode=yes -o StrictHostKeyChecking=yes ${SSH_PORT:+-p "$SSH_PORT"} "$SSH_HOST" "echo ok" || exit 1
           fi
+
+          # Preflight connectivity using correct user/port
+          TARGET="${SSH_HOST}"
+          [ -n "${SSH_USER:-}" ] && TARGET="${SSH_USER}@${TARGET}"
+          PRE_PORT=()
+          [ -n "${SSH_PORT:-}" ] && PRE_PORT=(-p "$SSH_PORT")
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes "${PRE_PORT[@]}" "$TARGET" "echo ok"
 
       - name: Kamal setup (optional)
         if: ${{ inputs.run_setup }}
