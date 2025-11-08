@@ -1,9 +1,9 @@
 # Name of your application. Used to uniquely configure containers.
-# deploy 6
+# deploy 7
 service: zztomatozz
 
 # Name of the container image.
-image: ghcr.io/lizkca/zztomatozz
+image: lizkca/zztomatozz
 
 # Deploy to these servers.
 servers:
