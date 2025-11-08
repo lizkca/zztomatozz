@@ -9,7 +9,7 @@ jobs:
   scan_ruby:
     runs-on: ubuntu-latest
     env:
-      BUNDLE_WITH: "development,test"
+      BUNDLE_WITH: "development:test"
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
