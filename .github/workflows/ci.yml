@@ -8,7 +8,8 @@ on:
 jobs:
   scan_ruby:
     runs-on: ubuntu-latest
-
+    env:
+      BUNDLE_WITH: "development,test"
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -20,7 +21,7 @@ jobs:
           bundler-cache: true
 
       - name: Scan for common Rails security vulnerabilities using static analysis
-        run: bin/brakeman --no-pager
+        run: bundle exec brakeman --no-pager
 
   scan_js:
     runs-on: ubuntu-latest
