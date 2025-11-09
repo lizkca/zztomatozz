@@ -48,22 +48,32 @@ jobs:
           printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           sed -i 's/\r$//' ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          # Validate private key (fail if encrypted or malformed)
+          # 校验私钥可解析（避免加密或损坏）
           ssh-keygen -y -f ~/.ssh/id_rsa >/dev/null 2>&1 || { echo "SSH_PRIVATE_KEY invalid or passphrase-protected"; exit 1; }
 
-          # Build host list: prefer secrets, also include Kamal's servers.web from config/deploy.yml
+          # 主机列表：优先 secrets，其次 config/deploy.yml 的 servers.web
           HOSTS=()
           if [ -n "${SSH_HOST:-}" ]; then HOSTS+=("$SSH_HOST"); fi
-          mapfile -t CFG_HOSTS < <(ruby -ryaml -e 'cfg = YAML.load_file("config/deploy.yml"); hosts = cfg["servers"]["web"]; hosts = Array(hosts); hosts.each { |h| puts h }')
+          mapfile -t CFG_HOSTS < <(ruby -ryaml -e 'cfg = YAML.load_file("config/deploy.yml"); hosts = Array(cfg["servers"]["web"]); hosts.each { |h| puts h }')
           HOSTS+=("${CFG_HOSTS[@]}")
 
-          # Reset known_hosts to avoid stale fingerprints and repopulate
+          # 刷新用户级与全局级 known_hosts，覆盖旧指纹
           : > ~/.ssh/known_hosts
           for h in "${HOSTS[@]}"; do
+            # 移除默认端口与非默认端口形式
+            ssh-keygen -R "$h" || true
+            sudo ssh-keygen -f /etc/ssh/ssh_known_hosts -R "$h" || true
             if [ -n "${SSH_PORT:-}" ]; then
-              ssh-keyscan -T 10 -p "$SSH_PORT" -H "$h" >> ~/.ssh/known_hosts || true
+              ssh-keygen -R "[$h]:$SSH_PORT" || true
+              sudo ssh-keygen -f /etc/ssh/ssh_known_hosts -R "[$h]:$SSH_PORT" || true
+            fi
+            # 抓取当前指纹（所有算法），写入两个 known_hosts
+            if [ -n "${SSH_PORT:-}" ]; then
+              ssh-keyscan -T 10 -t rsa,ecdsa,ed25519 -p "$SSH_PORT" -H "$h" >> ~/.ssh/known_hosts || true
+              sudo ssh-keyscan -T 10 -t rsa,ecdsa,ed25519 -p "$SSH_PORT" -H "$h" >> /etc/ssh/ssh_known_hosts || true
             else
-              ssh-keyscan -T 10 -H "$h" >> ~/.ssh/known_hosts || true
+              ssh-keyscan -T 10 -t rsa,ecdsa,ed25519 -H "$h" >> ~/.ssh/known_hosts || true
+              sudo ssh-keyscan -T 10 -t rsa,ecdsa,ed25519 -H "$h" >> /etc/ssh/ssh_known_hosts || true
             fi
           done
       - name: Preflight SSH connectivity
@@ -74,7 +84,6 @@ jobs:
           SSH_USER: ${{ secrets.SSH_USER }}
         run: |
           set -euo pipefail
-          # Pick effective host: SSH_HOST if provided, otherwise first from config/deploy.yml
           EFFECTIVE_HOST="${SSH_HOST:-}"
           if [ -z "$EFFECTIVE_HOST" ]; then
             EFFECTIVE_HOST="$(ruby -ryaml -e 'cfg = YAML.load_file("config/deploy.yml"); hosts = Array(cfg["servers"]["web"]); puts(hosts.first || "")')"
@@ -82,12 +91,10 @@ jobs:
           if [ -z "$EFFECTIVE_HOST" ]; then
             echo "No target host resolved from secrets or config/deploy.yml"; exit 1
           fi
-
           TARGET="$EFFECTIVE_HOST"
           [ -n "${SSH_USER:-}" ] && TARGET="${SSH_USER}@${TARGET}"
           PRE_PORT=()
           [ -n "${SSH_PORT:-}" ] && PRE_PORT=(-p "$SSH_PORT")
-
           ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=10 "${PRE_PORT[@]}" "$TARGET" "echo ok"
 
       - name: Ensure Docker on server
