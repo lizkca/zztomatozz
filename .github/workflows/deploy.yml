@@ -87,7 +87,35 @@ jobs:
           [ -n "${SSH_USER:-}" ] && TARGET="${SSH_USER}@${TARGET}"
           PRE_PORT=()
           [ -n "${SSH_PORT:-}" ] && PRE_PORT=(-p "$SSH_PORT")
+
           ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=10 "${PRE_PORT[@]}" "$TARGET" "echo ok"
+
+      - name: Ensure Docker on server
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          set -euo pipefail
+          EFFECTIVE_HOST="${SSH_HOST:-}"
+          if [ -z "$EFFECTIVE_HOST" ]; then
+            EFFECTIVE_HOST="$(ruby -ryaml -e 'cfg = YAML.load_file("config/deploy.yml"); hosts = Array(cfg["servers"]["web"]); puts(hosts.first || "")')"
+          fi
+          TARGET="$EFFECTIVE_HOST"
+          [ -n "${SSH_USER:-}" ] && TARGET="${SSH_USER}@${TARGET}"
+          PRE_PORT=()
+          [ -n "${SSH_PORT:-}" ] && PRE_PORT=(-p "$SSH_PORT")
+
+          # 如果未安装 docker，则使用官方安装脚本安装；并确保服务启动
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes "${PRE_PORT[@]}" "$TARGET" '\
+            if ! command -v docker >/dev/null 2>&1; then \
+              curl -fsSL https://get.docker.com | sh; \
+            fi; \
+            if command -v systemctl >/dev/null 2>&1; then \
+              (command -v sudo >/dev/null 2>&1 && sudo systemctl enable --now docker) || systemctl enable --now docker || true; \
+            fi \
+          '
 
       - name: Kamal setup (optional)
         if: ${{ inputs.run_setup }}
