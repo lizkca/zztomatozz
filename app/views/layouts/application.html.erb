@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#10b981">
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -18,11 +20,37 @@
     <link rel="apple-touch-icon" href="/icon.png">
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%# 注意：运行 bin/rails tailwind:install 后会自动插入下面这行： %>
+    <%# <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %> %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <%= yield %>
+  <body class="min-h-screen bg-gradient-to-b from-emerald-50 to-white text-slate-700 antialiased">
+    <header class="sticky top-0 z-10 border-b border-emerald-100 bg-white/80 backdrop-blur">
+      <div class="mx-auto max-w-5xl px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">🍅</span>
+          <span class="font-semibold text-emerald-600">番茄计时器</span>
+        </div>
+        <div class="text-sm text-slate-500">
+          <span class="hidden sm:inline">高效、专注、轻松完成任务</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-5xl px-4 py-8">
+      <div class="rounded-2xl bg-white/80 backdrop-blur shadow-sm ring-1 ring-emerald-100">
+        <div class="p-6">
+          <%= yield %>
+        </div>
+      </div>
+    </main>
+
+    <footer class="mx-auto max-w-5xl px-4 pb-8">
+      <div class="text-center text-xs text-slate-400">
+        <span>© <%= Time.current.year %> Zztomatozz · 保持专注，提升效率</span>
+      </div>
+    </footer>
   </body>
 </html>
