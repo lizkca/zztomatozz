@@ -1,0 +1,57 @@
+<div data-controller="pomodoro" class="grid gap-6">
+  <div class="rounded-xl ring-1 ring-emerald-200 bg-white p-6 flex flex-col items-center gap-4">
+    <div class="text-7xl font-bold tracking-wide text-emerald-700" data-pomodoro-target="display">25:00</div>
+    <div class="flex gap-3">
+      <button data-action="pomodoro#start" class="px-4 py-2 rounded-lg bg-emerald-600 text-white">开始</button>
+      <button data-action="pomodoro#pause" class="px-4 py-2 rounded-lg bg-emerald-100 text-emerald-700">暂停</button>
+      <button data-action="pomodoro#resume" class="px-4 py-2 rounded-lg bg-emerald-100 text-emerald-700">继续</button>
+      <button data-action="pomodoro#reset" class="px-4 py-2 rounded-lg bg-red-100 text-red-700">重置</button>
+    </div>
+    <input type="hidden" data-pomodoro-target="csrf" value="<%= form_authenticity_token %>">
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="rounded-xl ring-1 ring-emerald-200 bg-white p-6">
+      <div class="text-sm text-slate-500">总次数</div>
+      <div class="mt-2 text-3xl font-bold text-emerald-700"><%= @total_count %></div>
+    </div>
+    <div class="rounded-xl ring-1 ring-emerald-200 bg-white p-6">
+      <div class="text-sm text-slate-500">今日次数</div>
+      <div class="mt-2 text-3xl font-bold text-emerald-700"><%= @today_count %></div>
+    </div>
+    <div class="rounded-xl ring-1 ring-emerald-200 bg-white p-6">
+      <div class="text-sm text-slate-500">日历</div>
+      <div class="mt-2">
+        <a href="/calendar" class="text-emerald-600">查看本月日历</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="rounded-xl ring-1 ring-emerald-200 bg-white p-6">
+    <div class="flex items-center gap-2">
+      <div class="text-slate-600">近期番茄</div>
+    </div>
+    <div class="mt-4 flex flex-wrap gap-2">
+      <% @recent_sessions.each do |s| %>
+        <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-50">
+          <span>🍅</span>
+          <span class="text-sm text-slate-600"><%= s.label.presence || s.ended_at.strftime("%m-%d %H:%M") %></span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <dialog data-pomodoro-target="dialog" class="rounded-xl p-0">
+    <form method="dialog" class="p-6 w-80">
+      <div class="text-lg font-semibold text-emerald-700">记录番茄</div>
+      <div class="mt-4 grid gap-3">
+        <input type="text" placeholder="标签" data-pomodoro-target="label" class="w-full rounded-lg ring-1 ring-slate-200 p-2">
+        <textarea placeholder="备注" data-pomodoro-target="note" class="w-full rounded-lg ring-1 ring-slate-200 p-2"></textarea>
+      </div>
+      <div class="mt-4 flex justify-end gap-3">
+        <button value="cancel" class="px-3 py-2 rounded-lg bg-slate-100">取消</button>
+        <button value="default" data-action="pomodoro#save" class="px-3 py-2 rounded-lg bg-emerald-600 text-white">保存</button>
+      </div>
+    </form>
+  </dialog>
+</div>
