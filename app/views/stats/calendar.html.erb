@@ -1,0 +1,34 @@
+<% month_name = Date::MONTHNAMES[@month] %>
+<div class="rounded-xl ring-1 ring-emerald-200 bg-white p-6">
+  <div class="flex items-center justify-between">
+    <div class="text-lg font-semibold text-emerald-700"><%= @year %> 年 <%= @month %> 月</div>
+    <div class="flex gap-2">
+      <% prev = Date.new(@year, @month, 1).prev_month %>
+      <% nxt = Date.new(@year, @month, 1).next_month %>
+      <a href="/calendar?year=<%= prev.year %>&month=<%= prev.month %>" class="px-3 py-2 rounded-lg bg-emerald-100 text-emerald-700">上月</a>
+      <a href="/calendar?year=<%= nxt.year %>&month=<%= nxt.month %>" class="px-3 py-2 rounded-lg bg-emerald-100 text-emerald-700">下月</a>
+    </div>
+  </div>
+  <div class="mt-4 grid grid-cols-7 gap-2 text-sm text-slate-500">
+    <div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div><div>日</div>
+  </div>
+  <% start = Date.new(@year, @month, 1) %>
+  <% first_wday = (start.cwday) %>
+  <div class="mt-2 grid grid-cols-7 gap-2">
+    <% (first_wday - 1).times do %>
+      <div class="h-20 rounded-lg bg-slate-50"></div>
+    <% end %>
+    <% (start..start.end_of_month).each do |d| %>
+      <% c = @counts[d] || 0 %>
+      <div class="h-20 rounded-lg ring-1 ring-emerald-100 bg-emerald-50 p-2 flex flex-col">
+        <div class="text-xs text-slate-500"><%= d.day %></div>
+        <div class="mt-1 text-sm text-emerald-700 font-semibold"><%= c %></div>
+        <div class="mt-auto flex gap-1 flex-wrap">
+          <% [c, 5].min.times do %>
+            <span>🍅</span>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

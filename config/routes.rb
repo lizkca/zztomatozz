@@ -10,6 +10,9 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Defines the root path route ("/")
-  # root "posts#index"
+  root "home#index"
+  resources :pomodoro_sessions, only: [ :index, :create, :update ]
+  get "stats", to: "stats#show"
+  get "calendar", to: "stats#calendar"
   get "style-test", to: "style_test#index"
 end
