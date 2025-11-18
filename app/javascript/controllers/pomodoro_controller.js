@@ -1,10 +1,13 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["display", "dialog", "label", "note", "csrf"]
+  static targets = ["display", "dialog", "label", "note", "csrf", "minutes"]
 
   connect() {
-    this.workSeconds = 25 * 60
+    const saved = parseInt(localStorage.getItem("pomodoro_work_minutes"), 10)
+    const base = (!isNaN(saved) && saved > 0) ? saved : parseInt(this.minutesTarget?.value || "25", 10)
+    const minutes = (!isNaN(base) && base > 0) ? base : 25
+    this.workSeconds = minutes * 60
     this.remaining = this.workSeconds
     this.timer = null
     this.startedAt = null
@@ -45,6 +48,15 @@ export default class extends Controller {
     this.remaining = this.workSeconds
     this.startedAt = null
     this.render()
+  }
+
+  setMinutes() {
+    const val = parseInt(this.minutesTarget.value, 10)
+    const clamped = isNaN(val) ? 25 : Math.min(180, Math.max(1, val))
+    this.minutesTarget.value = clamped
+    this.workSeconds = clamped * 60
+    localStorage.setItem("pomodoro_work_minutes", String(clamped))
+    this.reset()
   }
 
   finish() {
