@@ -34,6 +34,7 @@
           <span class="font-semibold text-emerald-600">番茄计时器</span>
         </div>
         <div class="flex items-center gap-4 text-sm">
+          <a href="<%= pomodoro_sessions_path %>" class="px-3 py-1 rounded-lg bg-emerald-50 text-emerald-700">记录</a>
           <% if current_user %>
             <span class="text-emerald-700"><%= current_user.email %></span>
             <%= button_to "退出", session_path, method: :delete, class: "px-3 py-1 rounded-lg bg-emerald-100 text-emerald-700" %>

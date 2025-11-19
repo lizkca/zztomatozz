@@ -25,7 +25,7 @@ class PomodoroSessionsController < ApplicationController
     if current_user
       ps = PomodoroSession.where(user_id: current_user.id).find(params[:id])
     else
-      ps = PomodoroSession.where(user_id: nil).find(params[:id])
+      ps = PomodoroSession.where(user_id: nil, visitor_id: cookies[:visitor_id]).find(params[:id])
     end
     if ps.update(update_params)
       render json: { ok: true }

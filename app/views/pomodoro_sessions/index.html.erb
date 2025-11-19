@@ -1,0 +1,23 @@
+<div class="rounded-xl ring-1 ring-emerald-200 bg-white p-6">
+  <div class="flex items-center justify-between">
+    <div class="text-lg font-semibold text-emerald-700">
+      <% if current_user %>
+        我的番茄记录
+      <% else %>
+        共用番茄记录（未登录）
+      <% end %>
+    </div>
+    <a href="/" class="px-3 py-2 rounded-lg bg-emerald-100 text-emerald-700">返回首页</a>
+  </div>
+  <div class="mt-4 grid gap-2">
+    <% @sessions.each do |s| %>
+      <div class="flex items-center justify-between px-3 py-2 rounded-lg bg-emerald-50">
+        <div class="flex items-center gap-2">
+          <span>🍅</span>
+          <span class="text-sm text-slate-600"><%= s.label.presence || s.ended_at.strftime("%m-%d %H:%M") %></span>
+        </div>
+        <div class="text-xs text-slate-500"><%= s.duration_seconds / 60 %> 分钟</div>
+      </div>
+    <% end %>
+  </div>
+</div>
