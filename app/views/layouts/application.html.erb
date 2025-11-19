@@ -47,6 +47,12 @@
     </header>
 
     <main class="mx-auto max-w-5xl px-4 py-8">
+      <% if flash[:notice] %>
+        <div class="mb-4 rounded-lg bg-emerald-50 text-emerald-700 p-3 text-sm"><%= flash[:notice] %></div>
+      <% end %>
+      <% if flash[:alert] %>
+        <div class="mb-4 rounded-lg bg-red-50 text-red-700 p-3 text-sm"><%= flash[:alert] %></div>
+      <% end %>
       <div class="rounded-2xl bg-white/80 backdrop-blur shadow-sm ring-1 ring-emerald-100">
         <div class="p-6">
           <%= yield %>
