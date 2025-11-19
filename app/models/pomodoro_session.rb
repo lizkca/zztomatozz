@@ -1,4 +1,5 @@
 class PomodoroSession < ApplicationRecord
+  belongs_to :user, optional: true
   validates :visitor_id, presence: true
   validates :started_at, presence: true
   validates :ended_at, presence: true
@@ -8,6 +9,7 @@ class PomodoroSession < ApplicationRecord
 
   scope :for_visitor, ->(vid) { where(visitor_id: vid) }
   scope :for_date, ->(d) { where(date: d) }
+  scope :for_user, ->(user) { where(user_id: user.id) }
 
   private
 

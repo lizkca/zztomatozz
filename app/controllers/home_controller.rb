@@ -1,8 +1,12 @@
 class HomeController < ApplicationController
   def index
-    vid = cookies[:visitor_id]
-    @total_count = PomodoroSession.for_visitor(vid).count
-    @today_count = PomodoroSession.for_visitor(vid).for_date(Date.current).count
-    @recent_sessions = PomodoroSession.for_visitor(vid).order(ended_at: :desc).limit(12)
+    if current_user
+      scope = PomodoroSession.where(user_id: current_user.id)
+    else
+      scope = PomodoroSession.where(user_id: nil)
+    end
+    @total_count = scope.count
+    @today_count = scope.for_date(Date.current).count
+    @recent_sessions = scope.order(ended_at: :desc).limit(12)
   end
 end

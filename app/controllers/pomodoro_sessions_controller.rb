@@ -2,13 +2,18 @@ class PomodoroSessionsController < ApplicationController
   protect_from_forgery with: :exception
 
   def index
-    vid = cookies[:visitor_id]
-    @sessions = PomodoroSession.for_visitor(vid).order(ended_at: :desc).limit(50)
+    if current_user
+      @sessions = PomodoroSession.where(user_id: current_user.id).order(ended_at: :desc).limit(50)
+    else
+      @sessions = PomodoroSession.where(user_id: nil).order(ended_at: :desc).limit(50)
+    end
   end
 
   def create
     vid = cookies[:visitor_id]
-    ps = PomodoroSession.new(pomodoro_params.merge(visitor_id: vid))
+    attrs = pomodoro_params.merge(visitor_id: vid)
+    attrs[:user_id] = current_user&.id
+    ps = PomodoroSession.new(attrs)
     if ps.save
       render json: { id: ps.id }, status: :created
     else
@@ -17,8 +22,11 @@ class PomodoroSessionsController < ApplicationController
   end
 
   def update
-    vid = cookies[:visitor_id]
-    ps = PomodoroSession.for_visitor(vid).find(params[:id])
+    if current_user
+      ps = PomodoroSession.where(user_id: current_user.id).find(params[:id])
+    else
+      ps = PomodoroSession.where(user_id: nil, visitor_id: cookies[:visitor_id]).find(params[:id])
+    end
     if ps.update(update_params)
       render json: { ok: true }
     else
