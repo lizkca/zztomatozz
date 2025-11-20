@@ -2,12 +2,12 @@
   <div class="flex items-center justify-between">
     <div class="text-lg font-semibold text-emerald-700">
       <% if current_user %>
-        我的番茄记录
+        <%= t("records.title_mine") %>
       <% else %>
-        共用番茄记录（未登录）
+        <%= t("records.title_shared") %>
       <% end %>
     </div>
-    <a href="/" class="px-3 py-2 rounded-lg bg-emerald-100 text-emerald-700">返回首页</a>
+    <a href="/" class="px-3 py-2 rounded-lg bg-emerald-100 text-emerald-700"><%= t("stats.back_home") %></a>
   </div>
   <div class="mt-4 grid gap-2">
     <% @sessions.each do |s| %>
@@ -16,7 +16,7 @@
           <span>🍅</span>
           <span class="text-sm text-slate-600"><%= s.label.presence || s.ended_at.strftime("%m-%d %H:%M") %></span>
         </div>
-        <div class="text-xs text-slate-500"><%= s.duration_seconds / 60 %> 分钟</div>
+        <div class="text-xs text-slate-500"><%= s.duration_seconds / 60 %> <%= t("records.minutes_suffix") %></div>
       </div>
     <% end %>
   </div>

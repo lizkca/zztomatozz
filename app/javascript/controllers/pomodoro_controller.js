@@ -2,6 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["display", "dialog", "label", "note", "csrf", "minutes"]
+  static values = { titleBase: String }
 
   connect() {
     const saved = parseInt(localStorage.getItem("pomodoro_work_minutes"), 10)
@@ -18,7 +19,8 @@ export default class extends Controller {
     const m = Math.floor(this.remaining / 60)
     const s = this.remaining % 60
     this.displayTarget.textContent = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`
-    document.title = `${this.displayTarget.textContent} · 番茄`
+    const base = this.titleBaseValue || "Pomodoro"
+    document.title = `${this.displayTarget.textContent} · ${base}`
   }
 
   start() {

@@ -1,0 +1,44 @@
+zh:
+  site:
+    name: "番茄计时器"
+  nav:
+    records: "记录"
+    login: "登录"
+    logout: "退出"
+    signup: "注册"
+    home: "首页"
+    lang_en: "English"
+    lang_zh: "中文"
+  home:
+    timer_display_default: "25:00"
+    work_minutes_label: "工作时长(分钟)"
+    apply: "应用"
+    start: "开始"
+    pause: "暂停"
+    resume: "继续"
+    reset: "重置"
+    total: "总次数"
+    today: "今日次数"
+    calendar_link: "查看本月日历"
+    recent: "近期番茄"
+    dialog_title: "记录番茄"
+    label_placeholder: "标签"
+    note_placeholder: "备注"
+    cancel: "取消"
+    save: "保存"
+  stats:
+    total: "总次数"
+    today: "今日次数"
+    month_year: "%{year} 年 %{month} 月"
+    prev: "上月"
+    next: "下月"
+    back_home: "返回首页"
+    weekdays_short: ["一", "二", "三", "四", "五", "六", "日"]
+  records:
+    title_mine: "我的番茄记录"
+    title_shared: "共用番茄记录（未登录）"
+    minutes_suffix: "分钟"
+  auth:
+    login_failed: "登录失败"
+  pomodoro:
+    title_base: "番茄"

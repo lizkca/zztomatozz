@@ -31,17 +31,19 @@
       <div class="mx-auto max-w-5xl px-4 py-3 flex items-center justify-between">
         <div class="flex items-center gap-3">
           <span class="text-2xl">🍅</span>
-          <span class="font-semibold text-emerald-600">番茄计时器</span>
+          <span class="font-semibold text-emerald-600"><%= t("site.name") %></span>
         </div>
         <div class="flex items-center gap-4 text-sm">
-          <a href="<%= pomodoro_sessions_path %>" class="px-3 py-1 rounded-lg bg-emerald-50 text-emerald-700">记录</a>
+          <a href="<%= pomodoro_sessions_path %>" class="px-3 py-1 rounded-lg bg-emerald-50 text-emerald-700"><%= t("nav.records") %></a>
           <% if current_user %>
             <span class="text-emerald-700"><%= current_user.email %></span>
-            <%= button_to "退出", session_path, method: :delete, class: "px-3 py-1 rounded-lg bg-emerald-100 text-emerald-700" %>
+            <%= button_to t("nav.logout"), session_path, method: :delete, class: "px-3 py-1 rounded-lg bg-emerald-100 text-emerald-700" %>
           <% else %>
-            <a href="<%= new_session_path %>" class="px-3 py-1 rounded-lg bg-emerald-100 text-emerald-700">登录</a>
-            <a href="<%= new_user_path %>" class="px-3 py-1 rounded-lg bg-emerald-100 text-emerald-700">注册</a>
+            <a href="<%= new_session_path %>" class="px-3 py-1 rounded-lg bg-emerald-100 text-emerald-700"><%= t("nav.login") %></a>
+            <a href="<%= new_user_path %>" class="px-3 py-1 rounded-lg bg-emerald-100 text-emerald-700"><%= t("nav.signup") %></a>
           <% end %>
+          <a href="/?locale=en" class="px-3 py-1 rounded-lg bg-emerald-50 text-emerald-700"><%= t("nav.lang_en") %></a>
+          <a href="/?locale=zh" class="px-3 py-1 rounded-lg bg-emerald-50 text-emerald-700"><%= t("nav.lang_zh") %></a>
         </div>
       </div>
     </header>
