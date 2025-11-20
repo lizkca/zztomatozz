@@ -1,5 +1,5 @@
 <div class="max-w-sm mx-auto">
-  <h1 class="text-xl font-semibold text-emerald-700">注册</h1>
+  <h1 class="text-xl font-semibold text-emerald-700"><%= t("nav.signup") %></h1>
   <% if @user.errors.any? %>
     <div class="mt-3 rounded-lg bg-red-50 text-red-700 p-3 text-sm">
       <% @user.errors.full_messages.each do |m| %>
@@ -8,12 +8,12 @@
     </div>
   <% end %>
   <%= form_with model: @user, url: users_path, method: :post, local: true, class: "mt-4 grid gap-3" do |f| %>
-    <%= f.email_field :email, placeholder: "邮箱", class: "rounded-lg ring-1 ring-slate-200 p-2" %>
-    <%= f.password_field :password, placeholder: "密码", class: "rounded-lg ring-1 ring-slate-200 p-2" %>
-    <%= f.password_field :password_confirmation, placeholder: "确认密码", class: "rounded-lg ring-1 ring-slate-200 p-2" %>
-    <%= f.submit "注册", class: "px-4 py-2 rounded-lg bg-emerald-600 text-white" %>
+    <%= f.email_field :email, placeholder: "Email", class: "rounded-lg ring-1 ring-slate-200 p-2" %>
+    <%= f.password_field :password, placeholder: "Password", class: "rounded-lg ring-1 ring-slate-200 p-2" %>
+    <%= f.password_field :password_confirmation, placeholder: "Confirm password", class: "rounded-lg ring-1 ring-slate-200 p-2" %>
+    <%= f.submit t("nav.signup"), class: "px-4 py-2 rounded-lg bg-emerald-600 text-white" %>
   <% end %>
   <div class="mt-3 text-sm">
-    <a href="<%= new_session_path %>" class="text-emerald-600">已有账号？去登录</a>
+    <a href="<%= new_session_path %>" class="text-emerald-600"><%= t("nav.login") %></a>
   </div>
 </div>

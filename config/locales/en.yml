@@ -28,4 +28,46 @@
 #       enabled: "ON"
 
 en:
-  hello: "Hello world"
+  site:
+    name: "Pomodoro Timer"
+  nav:
+    records: "Records"
+    login: "Log in"
+    logout: "Log out"
+    signup: "Sign up"
+    home: "Home"
+    lang_en: "English"
+    lang_zh: "中文"
+  home:
+    timer_display_default: "25:00"
+    work_minutes_label: "Work duration (minutes)"
+    apply: "Apply"
+    start: "Start"
+    pause: "Pause"
+    resume: "Resume"
+    reset: "Reset"
+    total: "Total"
+    today: "Today"
+    calendar_link: "View this month's calendar"
+    recent: "Recent Pomodoros"
+    dialog_title: "Record Pomodoro"
+    label_placeholder: "Label"
+    note_placeholder: "Note"
+    cancel: "Cancel"
+    save: "Save"
+  stats:
+    total: "Total"
+    today: "Today"
+    month_year: "%{year} / %{month}"
+    prev: "Prev"
+    next: "Next"
+    back_home: "Back to Home"
+    weekdays_short: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+  records:
+    title_mine: "My Pomodoro Records"
+    title_shared: "Shared Pomodoro Records (anonymous)"
+    minutes_suffix: "min"
+  auth:
+    login_failed: "Login failed"
+  pomodoro:
+    title_base: "Pomodoro"

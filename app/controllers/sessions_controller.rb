@@ -8,7 +8,7 @@ class SessionsController < ApplicationController
       session[:user_id] = user.id
       redirect_to root_path
     else
-      flash[:alert] = "登录失败"
+      flash[:alert] = I18n.t("auth.login_failed")
       render :new, status: :unprocessable_entity
     end
   end

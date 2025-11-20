@@ -3,6 +3,7 @@ class ApplicationController < ActionController::Base
   allow_browser versions: :modern
   before_action :ensure_visitor_id
   before_action :set_current_user
+  before_action :set_locale
 
   private
 
@@ -20,4 +21,14 @@ class ApplicationController < ActionController::Base
   end
 
   helper_method :current_user
+
+  def set_locale
+    loc = params[:locale]&.to_sym
+    if loc && I18n.available_locales.include?(loc)
+      I18n.locale = loc
+      cookies.permanent[:locale] = loc
+    else
+      I18n.locale = (cookies[:locale]&.to_sym if I18n.available_locales.include?(cookies[:locale]&.to_sym)) || I18n.default_locale
+    end
+  end
 end
