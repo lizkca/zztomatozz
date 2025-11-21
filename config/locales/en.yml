@@ -55,6 +55,8 @@ en:
     note_placeholder: "Note"
     cancel: "Cancel"
     save: "Save"
+    default_label: "Focused pomodoro"
+    default_note: "Auto note"
   stats:
     total: "Total"
     today: "Today"

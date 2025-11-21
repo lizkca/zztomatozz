@@ -26,6 +26,8 @@ zh:
     note_placeholder: "备注"
     cancel: "取消"
     save: "保存"
+    default_label: "专注番茄"
+    default_note: "自动记录"
   stats:
     total: "总次数"
     today: "今日次数"
