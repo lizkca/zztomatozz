@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["display", "dialog", "label", "note", "csrf", "minutes"]
-  static values = { titleBase: String }
+  static values = { titleBase: String, defaultLabel: String, defaultNote: String }
 
   connect() {
     const saved = parseInt(localStorage.getItem("pomodoro_work_minutes"), 10)
@@ -66,6 +66,10 @@ export default class extends Controller {
     this.timer = null
     this.remaining = 0
     this.render()
+    const savedLabel = localStorage.getItem("pomodoro_default_label")
+    const savedNote = localStorage.getItem("pomodoro_default_note")
+    this.labelTarget.value = savedLabel || this.defaultLabelValue || "Pomodoro"
+    this.noteTarget.value = savedNote || this.defaultNoteValue || ""
     this.dialogTarget.showModal()
   }
 
@@ -93,6 +97,10 @@ export default class extends Controller {
       body: JSON.stringify(payload)
     })
     if (res.ok) {
+      try {
+        localStorage.setItem("pomodoro_default_label", this.labelTarget.value || "")
+        localStorage.setItem("pomodoro_default_note", this.noteTarget.value || "")
+      } catch (e) {}
       this.dialogTarget.close()
       this.reset()
       Turbo.visit(window.location.href)
