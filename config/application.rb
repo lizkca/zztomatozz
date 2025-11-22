@@ -19,5 +19,12 @@ module Zztomatozz
     config.i18n.available_locales = [ :en, :zh ]
     config.i18n.default_locale = :zh
     config.i18n.fallbacks = [ :en ]
+
+    config.session_store :cookie_store,
+      key: "_zztomatozz_session",
+      expire_after: 6.months,
+      secure: Rails.env.production?,
+      httponly: true,
+      same_site: :lax
   end
 end

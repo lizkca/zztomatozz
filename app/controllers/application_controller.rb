@@ -13,7 +13,10 @@ class ApplicationController < ActionController::Base
   end
 
   def set_current_user
-    @current_user = User.find_by(id: session[:user_id]) if session[:user_id]
+    if session[:user_id]
+      @current_user = User.find_by(id: session[:user_id])
+      session[:last_seen_at] = Time.current.to_i if @current_user
+    end
   end
 
   def current_user
