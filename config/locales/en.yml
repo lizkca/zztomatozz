@@ -57,6 +57,8 @@ en:
     save: "Save"
     default_label: "Focused pomodoro"
     default_note: "Auto note"
+    wake_lock_label: "Keep screen awake"
+    finish_notify_title: "Pomodoro finished"
   stats:
     total: "Total"
     today: "Today"
