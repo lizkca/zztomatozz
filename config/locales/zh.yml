@@ -28,6 +28,8 @@ zh:
     save: "保存"
     default_label: "专注番茄"
     default_note: "自动记录"
+    wake_lock_label: "保持屏幕常亮"
+    finish_notify_title: "番茄计时结束"
   stats:
     total: "总次数"
     today: "今日次数"

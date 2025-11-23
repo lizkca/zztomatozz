@@ -1,8 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["display", "dialog", "label", "note", "csrf", "minutes"]
-  static values = { titleBase: String, defaultLabel: String, defaultNote: String }
+  static targets = ["display", "dialog", "label", "note", "csrf", "minutes", "wakeToggle"]
+  static values = { titleBase: String, defaultLabel: String, defaultNote: String, finishTitle: String }
 
   connect() {
     const saved = parseInt(localStorage.getItem("pomodoro_work_minutes"), 10)
@@ -12,6 +12,7 @@ export default class extends Controller {
     this.remaining = this.workSeconds
     this.timer = null
     this.startedAt = null
+    this.wakeLock = null
     this.render()
   }
 
@@ -31,12 +32,15 @@ export default class extends Controller {
       this.render()
       if (this.remaining <= 0) this.finish()
     }, 1000)
+    this.requestWakeLockIfEnabled()
+    this.requestNotificationPermission()
   }
 
   pause() {
     if (!this.timer) return
     clearInterval(this.timer)
     this.timer = null
+    this.releaseWakeLock()
   }
 
   resume() {
@@ -50,6 +54,7 @@ export default class extends Controller {
     this.remaining = this.workSeconds
     this.startedAt = null
     this.render()
+    this.releaseWakeLock()
   }
 
   setMinutes() {
@@ -70,6 +75,7 @@ export default class extends Controller {
     const savedNote = localStorage.getItem("pomodoro_default_note")
     this.labelTarget.value = savedLabel || this.defaultLabelValue || "Pomodoro"
     this.noteTarget.value = savedNote || this.defaultNoteValue || ""
+    this.notifyFinish()
     this.dialogTarget.showModal()
   }
 
@@ -105,5 +111,63 @@ export default class extends Controller {
       this.reset()
       Turbo.visit(window.location.href)
     }
+  }
+
+  async requestWakeLockIfEnabled() {
+    try {
+      if (this.wakeToggleTarget?.checked && "wakeLock" in navigator) {
+        this.wakeLock = await navigator.wakeLock.request("screen")
+      }
+    } catch (e) {}
+  }
+
+  async toggleWakeLock() {
+    if (this.wakeToggleTarget?.checked) {
+      await this.requestWakeLockIfEnabled()
+    } else {
+      this.releaseWakeLock()
+    }
+  }
+
+  releaseWakeLock() {
+    try {
+      this.wakeLock?.release?.()
+      this.wakeLock = null
+    } catch (e) {}
+  }
+
+  requestNotificationPermission() {
+    try {
+      if ("Notification" in window && Notification.permission === "default") {
+        Notification.requestPermission()
+      }
+    } catch (e) {}
+  }
+
+  notifyFinish() {
+    try {
+      if ("Notification" in window && Notification.permission === "granted") {
+        const title = this.finishTitleValue || (document.querySelector("[data-pomodoro-finish-title-value]")?.dataset?.pomodoroFinishTitleValue) || "Pomodoro finished"
+        new Notification(this.titleBaseValue || "Pomodoro", { body: title })
+      }
+    } catch (e) {}
+    try {
+      if (navigator.vibrate) navigator.vibrate([300, 150, 300])
+    } catch (e) {}
+    try {
+      const Ctx = window.AudioContext || window.webkitAudioContext
+      if (!Ctx) return
+      const ctx = new Ctx()
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.type = "sine"
+      osc.frequency.setValueAtTime(880, ctx.currentTime)
+      gain.gain.setValueAtTime(0.001, ctx.currentTime)
+      gain.gain.exponentialRampToValueAtTime(0.3, ctx.currentTime + 0.05)
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.start()
+      setTimeout(() => { gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.1); osc.stop(ctx.currentTime + 0.12) }, 200)
+    } catch (e) {}
   }
 }
