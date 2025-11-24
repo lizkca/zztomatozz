@@ -8,3 +8,5 @@
     <div class="mt-2 text-4xl font-bold text-emerald-700"><%= @today_count %></div>
   </div>
 </div>
+<% content_for :title, t("site.name") + " · " + t("stats.today") %>
+<% content_for :description, t("seo.description.stats") %>

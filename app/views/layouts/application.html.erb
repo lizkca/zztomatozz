@@ -1,8 +1,18 @@
 <!DOCTYPE html>
-<html>
+<html lang="<%= I18n.locale %>">
   <head>
-    <title><%= content_for(:title) || "Zztomatozz" %></title>
+    <title><%= content_for(:title) || (I18n.t("site.name") rescue "Zztomatozz") %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="<%= (content_for?(:description) ? yield(:description) : (I18n.t("seo.description.default") rescue "Pomodoro timer to stay focused")) %>">
+    <meta name="robots" content="<%= content_for?(:robots) ? yield(:robots) : "index,follow" %>">
+    <link rel="canonical" href="<%= request.original_url %>">
+    <link rel="alternate" hreflang="en" href="<%= request.base_url + request.path + (request.query_parameters.except(:locale).to_query.presence ? "?" + request.query_parameters.except(:locale).to_query + "&locale=en" : "?locale=en") %>">
+    <link rel="alternate" hreflang="zh" href="<%= request.base_url + request.path + (request.query_parameters.except(:locale).to_query.presence ? "?" + request.query_parameters.except(:locale).to_query + "&locale=zh" : "?locale=zh") %>">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="<%= content_for?(:title) ? yield(:title) : (I18n.t("site.name") rescue "Zztomatozz") %>">
+    <meta property="og:description" content="<%= (content_for?(:description) ? yield(:description) : (I18n.t("seo.description.default") rescue "Pomodoro timer to stay focused")) %>">
+    <meta property="og:url" content="<%= request.original_url %>">
+    <meta property="og:image" content="<%= request.base_url %>/icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#10b981">
@@ -13,6 +23,16 @@
     <%= yield :head %>
 
     <%= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "<%= I18n.t("site.name") %>",
+        "url": "<%= request.base_url %>/",
+        "inLanguage": "<%= I18n.locale %>"
+      }
+    </script>
 
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">

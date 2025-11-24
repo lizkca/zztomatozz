@@ -37,3 +37,5 @@
     <% end %>
   </div>
 </div>
+<% content_for :title, t("site.name") + " · " + t("stats.month_year", year: @year, month: @month) %>
+<% content_for :description, t("seo.description.calendar") %>
