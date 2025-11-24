@@ -17,3 +17,6 @@
     <a href="<%= new_session_path %>" class="text-emerald-600"><%= t("nav.login") %></a>
   </div>
 </div>
+<% content_for :title, t("nav.signup") %>
+<% content_for :description, t("seo.description.signup") %>
+<% content_for :robots, "noindex,nofollow" %>

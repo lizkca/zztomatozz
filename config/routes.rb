@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   resources :pomodoro_sessions, only: [ :index, :create, :update ]
   get "stats", to: "stats#show"
   get "calendar", to: "stats#calendar"
+  get "sitemap.xml", to: "sitemaps#index", defaults: { format: :xml }
   resource :session, only: [ :new, :create, :destroy ]
   resources :users, only: [ :new, :create ]
   get "style-test", to: "style_test#index"

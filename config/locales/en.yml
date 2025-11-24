@@ -75,3 +75,12 @@ en:
     login_failed: "Login failed"
   pomodoro:
     title_base: "Pomodoro"
+  seo:
+    description:
+      default: "Pomodoro timer to stay focused"
+      home: "Start, track and review your Pomodoro sessions"
+      stats: "Daily and monthly counts of your focus sessions"
+      calendar: "Calendar view of your monthly Pomodoro activity"
+      records: "List and review your recent Pomodoro records"
+      login: "Log in to save your Pomodoro history"
+      signup: "Create an account to keep your Pomodoro records"

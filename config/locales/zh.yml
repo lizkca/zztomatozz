@@ -46,3 +46,12 @@ zh:
     login_failed: "登录失败"
   pomodoro:
     title_base: "番茄"
+  seo:
+    description:
+      default: "番茄计时器，帮助你保持专注"
+      home: "开始、记录并回顾你的番茄专注"
+      stats: "每日与每月的专注次数统计"
+      calendar: "以日历方式查看本月番茄活动"
+      records: "查看与管理你的近期番茄记录"
+      login: "登录以保存你的番茄历史"
+      signup: "注册账号以保存番茄记录"
