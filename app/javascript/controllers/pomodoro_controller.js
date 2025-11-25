@@ -1,8 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["display", "dialog", "label", "note", "csrf", "minutes", "wakeToggle"]
-  static values = { titleBase: String, defaultLabel: String, defaultNote: String, finishTitle: String }
+  static targets = ["display", "dialog", "label", "note", "csrf", "minutes", "wakeToggle", "primaryButton"]
+  static values = { titleBase: String, defaultLabel: String, defaultNote: String, finishTitle: String, startLabel: String, pauseLabel: String, resumeLabel: String }
 
   connect() {
     const saved = parseInt(localStorage.getItem("pomodoro_work_minutes"), 10)
@@ -22,6 +22,14 @@ export default class extends Controller {
     this.displayTarget.textContent = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`
     const base = this.titleBaseValue || "Pomodoro"
     document.title = `${this.displayTarget.textContent} · ${base}`
+
+    if (this.hasPrimaryButtonTarget) {
+      const label = this.primaryLabelForState()
+      this.primaryButtonTarget.textContent = label
+      this.primaryButtonTarget.classList.toggle("bg-emerald-600", label === (this.startLabelValue || "Start") || label === (this.resumeLabelValue || "Resume"))
+      this.primaryButtonTarget.classList.toggle("bg-amber-500", label === (this.pauseLabelValue || "Pause"))
+      this.primaryButtonTarget.classList.toggle("text-white", true)
+    }
   }
 
   start() {
@@ -34,6 +42,7 @@ export default class extends Controller {
     }, 1000)
     this.requestWakeLockIfEnabled()
     this.requestNotificationPermission()
+    this.render()
   }
 
   pause() {
@@ -41,6 +50,7 @@ export default class extends Controller {
     clearInterval(this.timer)
     this.timer = null
     this.releaseWakeLock()
+    this.render()
   }
 
   resume() {
@@ -55,6 +65,30 @@ export default class extends Controller {
     this.startedAt = null
     this.render()
     this.releaseWakeLock()
+  }
+
+  primary() {
+    if (this.timer) {
+      this.pause()
+      return
+    }
+    if (this.remaining <= 0) {
+      this.reset()
+      this.start()
+      return
+    }
+    if (this.startedAt) {
+      this.resume()
+      return
+    }
+    this.start()
+  }
+
+  primaryLabelForState() {
+    if (this.timer) return this.pauseLabelValue || "Pause"
+    if (this.remaining <= 0) return this.startLabelValue || "Start"
+    if (this.startedAt) return this.resumeLabelValue || "Resume"
+    return this.startLabelValue || "Start"
   }
 
   setMinutes() {
@@ -76,6 +110,14 @@ export default class extends Controller {
     this.labelTarget.value = savedLabel || this.defaultLabelValue || "Pomodoro"
     this.noteTarget.value = savedNote || this.defaultNoteValue || ""
     this.notifyFinish()
+    this.dialogTarget.showModal()
+  }
+
+  openRecord() {
+    const savedLabel = localStorage.getItem("pomodoro_default_label")
+    const savedNote = localStorage.getItem("pomodoro_default_note")
+    this.labelTarget.value = savedLabel || this.defaultLabelValue || "Pomodoro"
+    this.noteTarget.value = savedNote || this.defaultNoteValue || ""
     this.dialogTarget.showModal()
   }
 

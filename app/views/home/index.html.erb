@@ -1,4 +1,4 @@
-<div data-controller="pomodoro" data-pomodoro-title-base-value="<%= t("pomodoro.title_base") %>" data-pomodoro-default-label-value="<%= t("home.default_label") %>" data-pomodoro-default-note-value="<%= t("home.default_note") %>" data-pomodoro-finish-title-value="<%= t("home.finish_notify_title") %>" class="grid gap-6">
+<div data-controller="pomodoro" data-pomodoro-title-base-value="<%= t("pomodoro.title_base") %>" data-pomodoro-default-label-value="<%= t("home.default_label") %>" data-pomodoro-default-note-value="<%= t("home.default_note") %>" data-pomodoro-finish-title-value="<%= t("home.finish_notify_title") %>" data-pomodoro-start-label-value="<%= t("home.start") %>" data-pomodoro-pause-label-value="<%= t("home.pause") %>" data-pomodoro-resume-label-value="<%= t("home.resume") %>" class="grid gap-6">
   <div class="rounded-xl ring-1 ring-emerald-200 bg-white p-6 flex flex-col items-center gap-4">
     <div class="text-7xl font-bold tracking-wide text-emerald-700" data-pomodoro-target="display"><%= t("home.timer_display_default") %></div>
     <div class="flex items-center gap-3">
@@ -13,10 +13,9 @@
     <div class="fixed inset-x-0 bottom-0 md:static md:bottom-auto md:inset-auto px-4 pb-4 md:p-0">
       <div class="mx-auto max-w-5xl rounded-xl ring-1 ring-emerald-200 bg-white p-3 md:p-0 shadow md:shadow-none" style="padding-bottom: env(safe-area-inset-bottom)">
         <div class="flex gap-3 justify-center">
-          <button data-action="pomodoro#start" class="px-4 py-3 rounded-lg bg-emerald-600 text-white active:scale-[0.98]"><%= t("home.start") %></button>
-          <button data-action="pomodoro#pause" class="px-4 py-3 rounded-lg bg-emerald-100 text-emerald-700 active:scale-[0.98]"><%= t("home.pause") %></button>
-          <button data-action="pomodoro#resume" class="px-4 py-3 rounded-lg bg-emerald-100 text-emerald-700 active:scale-[0.98]"><%= t("home.resume") %></button>
-          <button data-action="pomodoro#reset" class="px-4 py-3 rounded-lg bg-red-100 text-red-700 active:scale-[0.98]"><%= t("home.reset") %></button>
+          <button data-pomodoro-target="primaryButton" data-action="pomodoro#primary" class="px-5 py-3 rounded-lg bg-emerald-600 text-white active:scale-[0.98]"><%= t("home.start") %></button>
+          <button data-action="pomodoro#reset" class="px-4 py-3 rounded-lg bg-emerald-100 text-emerald-700 active:scale-[0.98]"><%= t("home.reset") %></button>
+          <button data-action="pomodoro#openRecord" class="px-4 py-3 rounded-lg bg-emerald-50 text-emerald-700 active:scale-[0.98]"><%= t("nav.records") %></button>
         </div>
       </div>
     </div>
